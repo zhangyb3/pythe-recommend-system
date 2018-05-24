@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="派知" />
+    <meta name="description" content="派知" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>派知</title>
+    <link rel="stylesheet" href="./css/share.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+
+
+<div id="total">
+<!--    <div class="title">
+         <h3>夜书所见</h3>
+         <p>303人阅读过</p>
+     </div>
+     <div class="content">
+         <p>萧萧梧叶送寒声，江上秋风动客情。</p>
+         <p>知有儿童挑促织，夜深篱落一灯明。</p>
+     </div>
+     <div class="appreciate">
+         <h2>鉴赏</h2>
+         <div class="detail">
+             《夜书所见》中的“见”是一个古今字，但在本文中是看见，所见的意思。所以在这里应读“jiàn”。全诗的理解应为：（题目）在孤寂夜里写写所思念的景象。（诗句）萧萧秋风吹动梧叶，送来阵阵寒意，客游在外的诗人不禁思念起自己的家乡。最记挂是自己疼爱的孩子，此时可能还在兴致勃勃地斗蟋蟀，夜深人静了还不肯睡眠。
+         </div>
+     </div>
+      <div class="appreciate">
+         <h2>创作背景</h2>
+         <div class="detail">
+             《夜书所见》中的“见”是一个古今字，但在本文中是看见，所见的意思。所以在这里应读“jiàn”。全诗的理解应为：（题目）在孤寂夜里写写所思念的景象。（诗句）萧萧秋风吹动梧叶，送来阵阵寒意，客游在外的诗人不禁思念起自己的家乡。最记挂是自己疼爱的孩子，此时可能还在兴致勃勃地斗蟋蟀，夜深人静了还不肯睡眠。
+         </div>
+     </div>-->
+</div>
+
+<div class="web-download-bar">
+    <div class="img left"><img  src="images/share_03.png"></div>
+    <div class="left">
+        <h1>派知</h1>
+        <p class="txt">每天多学一点新东西</p>
+    </div>
+    <div class="download clearfix" onclick="toDownload()">
+        <a href="javascript:"><div class="go-download right">前往下载</div></a>
+        <div class="download-img right">
+            <img src="images/download_img.png" alt="">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<script>
+    $.ajax({
+        type:'POST',
+        url:'https://app.pythe.cn/pythe-rest/rest/share/essay/',
+        dataType:"json",
+        contentType: "application/json",
+        data:JSON.stringify({
+            essayId:getParams("essayId"),
+            type:getParams("type")||2
+        }),
+        success:function(res){
+            updateTemplate(res.data.essay);
+        },
+        error:function(err){
+            console.log(err);
+        }
+    });
+    //更新内容
+    function updateTemplate(data){
+        var apc="";
+        var background="";
+        if(data.appreciation) {
+            apc = '<div class="appreciate"><h2>鉴赏</h2><div class="detail">'+data.appreciation+'</div></div>';
+        }
+        if(data.background){
+            background= '<div class="appreciate"><h2>创作背景</h2><div class="detail">'+data.background+'</div></div>';
+        }
+        var str='<div class="title"><h3>'+data.title+'</h3><p>'+(data.pv||0)+'人阅读过</p></div><div class="content">'+data.content+'</div>'+apc+background;
+
+        console.log(str);
+        if(data.background){
+            //$("body").css("background",data.background);
+        }
+        $("#total").html(str);
+    }
+    function getParams(name){//获取url上的参数
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return decodeURIComponent(r[2]);
+        }
+        return null;
+    }
+    function toDownload(){
+        var userAgentInfo = navigator.userAgent.toLowerCase();
+        if (userAgentInfo.indexOf('android') > 0)
+        {
+            location.href='http://app.qq.com/#id=detail&appid=1106272259';
+        }else if(userAgentInfo.indexOf('win') > 0){
+            location.href='http://sj.qq.com/myapp/detail.htm?apkName=com.dace.textreader';
+        }else if(userAgentInfo.indexOf('iphone') > 0){
+            alert('在开发中，带来不便请谅解');
+        }else if(userAgentInfo.indexOf('ipad') > 0){
+            alert('暂无ipad版');
+        }else if(userAgentInfo.indexOf('ipod') > 0){
+            alert('暂无ipod版');
+        }else{
+            alert('暂无'+userAgentInfo+'版');
+        }
+
+        //else if(userAgentInfo.indexOf('windows phone') > 0){
+        //alert('暂无电脑版');
+        //}
+
+    }
+
+</script>
+
+</body>
+</html>

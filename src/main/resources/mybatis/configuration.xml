@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<properties resource="mybatis/db.properties"></properties>
+	
+	<!--配置分页插件 -->
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageHelper">
+			<!--设置数据库类型 Oracle,Mysql,MariaDB,SQLite,Hsqldb,PostgreSQL六种数据库-->        
+        	<property name="dialect" value="mysql"/>
+		</plugin>
+	</plugins>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}"/>
+				<property name="url" value="${jdbc.url}"/>
+				<property name="username" value="${jdbc.username}"/>
+				<property name="password" value="${jdbc.password}"/>
+			</dataSource>
+		</environment>
+	</environments>	
+	
+	<mappers>
+		<mapper resource="mybatis/mapper/UsersMapper.xml"/>
+		<mapper resource="mybatis/mapper/NewsMapper.xml"/>
+		<mapper resource="mybatis/mapper/NewsLogsMapper.xml"/>
+		<mapper resource="mybatis/mapper/NewsModulesMapper.xml"/>
+		<mapper resource="mybatis/mapper/RecommendationsMapper.xml"/>
+		
+		<mapper resource="mybatis/mapper/VEssayViewLogMapper.xml"/>
+		<mapper resource="mybatis/mapper/TblEssayMapper.xml"/>
+		<mapper resource="mybatis/mapper/TblStudentEssayPreferenceMapper.xml"/>
+		<mapper resource="mybatis/mapper/TblStudentEssayRecommendationMapper.xml"/>
+		<mapper resource="mybatis/mapper/TblStudentMapper.xml"/>
+	</mappers>
+	
+	<!--以上加载有严格先后顺序 -->
+	
+</configuration>

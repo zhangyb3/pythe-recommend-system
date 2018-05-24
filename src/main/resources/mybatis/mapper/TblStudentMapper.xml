@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pythe.mapper.TblStudentMapper" >
+  <resultMap id="BaseResultMap" type="com.pythe.pojo.TblStudent" >
+    <id column="studentId" property="studentid" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="userImg" property="userimg" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="phoneNum" property="phonenum" jdbcType="VARCHAR" />
+    <result column="gradeId" property="gradeid" jdbcType="INTEGER" />
+    <result column="mnp1_openId" property="mnp1Openid" jdbcType="VARCHAR" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="updated" property="updated" jdbcType="TIMESTAMP" />
+    <result column="openId" property="openid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="knowlegeSpace" property="knowlegespace" jdbcType="VARCHAR" />
+    <result column="shares" property="shares" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="token" property="token" jdbcType="VARCHAR" />
+    <result column="wxToken" property="wxtoken" jdbcType="VARCHAR" />
+    <result column="union_id" property="unionId" jdbcType="VARCHAR" />
+    <result column="score" property="score" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.pythe.pojo.TblStudentWithBLOBs" extends="BaseResultMap" >
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+    <result column="collection" property="collection" jdbcType="LONGVARCHAR" />
+    <result column="favorite" property="favorite" jdbcType="LONGVARCHAR" />
+    <result column="complaintList" property="complaintlist" jdbcType="LONGVARCHAR" />
+    <result column="collect_sentence" property="collectSentence" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    studentId, username, userImg, password, phoneNum, gradeId, mnp1_openId, created, 
+    updated, openId, status, knowlegeSpace, shares, level, type, token, wxToken, union_id, 
+    score
+  </sql>
+  <sql id="Blob_Column_List" >
+    description, collection, favorite, complaintList, collect_sentence
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.pythe.pojo.TblStudentExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_student
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pythe.pojo.TblStudentExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_student
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_student
+    where studentId = #{studentid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_student
+    where studentId = #{studentid,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.pythe.pojo.TblStudentExample" >
+    delete from tbl_student
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.pythe.pojo.TblStudentWithBLOBs" >
+    insert into tbl_student (studentId, username, userImg, 
+      password, phoneNum, gradeId, 
+      mnp1_openId, created, updated, 
+      openId, status, knowlegeSpace, 
+      shares, level, type, 
+      token, wxToken, union_id, 
+      score, description, collection, 
+      favorite, complaintList, collect_sentence
+      )
+    values (#{studentid,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{userimg,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{phonenum,jdbcType=VARCHAR}, #{gradeid,jdbcType=INTEGER}, 
+      #{mnp1Openid,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{updated,jdbcType=TIMESTAMP}, 
+      #{openid,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{knowlegespace,jdbcType=VARCHAR}, 
+      #{shares,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{token,jdbcType=VARCHAR}, #{wxtoken,jdbcType=VARCHAR}, #{unionId,jdbcType=VARCHAR}, 
+      #{score,jdbcType=INTEGER}, #{description,jdbcType=LONGVARCHAR}, #{collection,jdbcType=LONGVARCHAR}, 
+      #{favorite,jdbcType=LONGVARCHAR}, #{complaintlist,jdbcType=LONGVARCHAR}, #{collectSentence,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pythe.pojo.TblStudentWithBLOBs" >
+    insert into tbl_student
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="studentid != null" >
+        studentId,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="userimg != null" >
+        userImg,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="phonenum != null" >
+        phoneNum,
+      </if>
+      <if test="gradeid != null" >
+        gradeId,
+      </if>
+      <if test="mnp1Openid != null" >
+        mnp1_openId,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="updated != null" >
+        updated,
+      </if>
+      <if test="openid != null" >
+        openId,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="knowlegespace != null" >
+        knowlegeSpace,
+      </if>
+      <if test="shares != null" >
+        shares,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="token != null" >
+        token,
+      </if>
+      <if test="wxtoken != null" >
+        wxToken,
+      </if>
+      <if test="unionId != null" >
+        union_id,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="collection != null" >
+        collection,
+      </if>
+      <if test="favorite != null" >
+        favorite,
+      </if>
+      <if test="complaintlist != null" >
+        complaintList,
+      </if>
+      <if test="collectSentence != null" >
+        collect_sentence,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="studentid != null" >
+        #{studentid,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="userimg != null" >
+        #{userimg,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phonenum != null" >
+        #{phonenum,jdbcType=VARCHAR},
+      </if>
+      <if test="gradeid != null" >
+        #{gradeid,jdbcType=INTEGER},
+      </if>
+      <if test="mnp1Openid != null" >
+        #{mnp1Openid,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated != null" >
+        #{updated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="openid != null" >
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="knowlegespace != null" >
+        #{knowlegespace,jdbcType=VARCHAR},
+      </if>
+      <if test="shares != null" >
+        #{shares,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="wxtoken != null" >
+        #{wxtoken,jdbcType=VARCHAR},
+      </if>
+      <if test="unionId != null" >
+        #{unionId,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="collection != null" >
+        #{collection,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="favorite != null" >
+        #{favorite,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="complaintlist != null" >
+        #{complaintlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="collectSentence != null" >
+        #{collectSentence,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.pythe.pojo.TblStudentExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_student
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tbl_student
+    <set >
+      <if test="record.studentid != null" >
+        studentId = #{record.studentid,jdbcType=BIGINT},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userimg != null" >
+        userImg = #{record.userimg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null" >
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phonenum != null" >
+        phoneNum = #{record.phonenum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gradeid != null" >
+        gradeId = #{record.gradeid,jdbcType=INTEGER},
+      </if>
+      <if test="record.mnp1Openid != null" >
+        mnp1_openId = #{record.mnp1Openid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.created != null" >
+        created = #{record.created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updated != null" >
+        updated = #{record.updated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.openid != null" >
+        openId = #{record.openid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.knowlegespace != null" >
+        knowlegeSpace = #{record.knowlegespace,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shares != null" >
+        shares = #{record.shares,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null" >
+        level = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.token != null" >
+        token = #{record.token,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wxtoken != null" >
+        wxToken = #{record.wxtoken,jdbcType=VARCHAR},
+      </if>
+      <if test="record.unionId != null" >
+        union_id = #{record.unionId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.score != null" >
+        score = #{record.score,jdbcType=INTEGER},
+      </if>
+      <if test="record.description != null" >
+        description = #{record.description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.collection != null" >
+        collection = #{record.collection,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.favorite != null" >
+        favorite = #{record.favorite,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.complaintlist != null" >
+        complaintList = #{record.complaintlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.collectSentence != null" >
+        collect_sentence = #{record.collectSentence,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tbl_student
+    set studentId = #{record.studentid,jdbcType=BIGINT},
+      username = #{record.username,jdbcType=VARCHAR},
+      userImg = #{record.userimg,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      phoneNum = #{record.phonenum,jdbcType=VARCHAR},
+      gradeId = #{record.gradeid,jdbcType=INTEGER},
+      mnp1_openId = #{record.mnp1Openid,jdbcType=VARCHAR},
+      created = #{record.created,jdbcType=TIMESTAMP},
+      updated = #{record.updated,jdbcType=TIMESTAMP},
+      openId = #{record.openid,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      knowlegeSpace = #{record.knowlegespace,jdbcType=VARCHAR},
+      shares = #{record.shares,jdbcType=VARCHAR},
+      level = #{record.level,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      token = #{record.token,jdbcType=VARCHAR},
+      wxToken = #{record.wxtoken,jdbcType=VARCHAR},
+      union_id = #{record.unionId,jdbcType=VARCHAR},
+      score = #{record.score,jdbcType=INTEGER},
+      description = #{record.description,jdbcType=LONGVARCHAR},
+      collection = #{record.collection,jdbcType=LONGVARCHAR},
+      favorite = #{record.favorite,jdbcType=LONGVARCHAR},
+      complaintList = #{record.complaintlist,jdbcType=LONGVARCHAR},
+      collect_sentence = #{record.collectSentence,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tbl_student
+    set studentId = #{record.studentid,jdbcType=BIGINT},
+      username = #{record.username,jdbcType=VARCHAR},
+      userImg = #{record.userimg,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      phoneNum = #{record.phonenum,jdbcType=VARCHAR},
+      gradeId = #{record.gradeid,jdbcType=INTEGER},
+      mnp1_openId = #{record.mnp1Openid,jdbcType=VARCHAR},
+      created = #{record.created,jdbcType=TIMESTAMP},
+      updated = #{record.updated,jdbcType=TIMESTAMP},
+      openId = #{record.openid,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      knowlegeSpace = #{record.knowlegespace,jdbcType=VARCHAR},
+      shares = #{record.shares,jdbcType=VARCHAR},
+      level = #{record.level,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      token = #{record.token,jdbcType=VARCHAR},
+      wxToken = #{record.wxtoken,jdbcType=VARCHAR},
+      union_id = #{record.unionId,jdbcType=VARCHAR},
+      score = #{record.score,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pythe.pojo.TblStudentWithBLOBs" >
+    update tbl_student
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="userimg != null" >
+        userImg = #{userimg,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phonenum != null" >
+        phoneNum = #{phonenum,jdbcType=VARCHAR},
+      </if>
+      <if test="gradeid != null" >
+        gradeId = #{gradeid,jdbcType=INTEGER},
+      </if>
+      <if test="mnp1Openid != null" >
+        mnp1_openId = #{mnp1Openid,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated != null" >
+        updated = #{updated,jdbcType=TIMESTAMP},
+      </if>
+      <if test="openid != null" >
+        openId = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="knowlegespace != null" >
+        knowlegeSpace = #{knowlegespace,jdbcType=VARCHAR},
+      </if>
+      <if test="shares != null" >
+        shares = #{shares,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="wxtoken != null" >
+        wxToken = #{wxtoken,jdbcType=VARCHAR},
+      </if>
+      <if test="unionId != null" >
+        union_id = #{unionId,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="collection != null" >
+        collection = #{collection,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="favorite != null" >
+        favorite = #{favorite,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="complaintlist != null" >
+        complaintList = #{complaintlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="collectSentence != null" >
+        collect_sentence = #{collectSentence,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where studentId = #{studentid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pythe.pojo.TblStudentWithBLOBs" >
+    update tbl_student
+    set username = #{username,jdbcType=VARCHAR},
+      userImg = #{userimg,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      phoneNum = #{phonenum,jdbcType=VARCHAR},
+      gradeId = #{gradeid,jdbcType=INTEGER},
+      mnp1_openId = #{mnp1Openid,jdbcType=VARCHAR},
+      created = #{created,jdbcType=TIMESTAMP},
+      updated = #{updated,jdbcType=TIMESTAMP},
+      openId = #{openid,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      knowlegeSpace = #{knowlegespace,jdbcType=VARCHAR},
+      shares = #{shares,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      wxToken = #{wxtoken,jdbcType=VARCHAR},
+      union_id = #{unionId,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      description = #{description,jdbcType=LONGVARCHAR},
+      collection = #{collection,jdbcType=LONGVARCHAR},
+      favorite = #{favorite,jdbcType=LONGVARCHAR},
+      complaintList = #{complaintlist,jdbcType=LONGVARCHAR},
+      collect_sentence = #{collectSentence,jdbcType=LONGVARCHAR}
+    where studentId = #{studentid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.TblStudent" >
+    update tbl_student
+    set username = #{username,jdbcType=VARCHAR},
+      userImg = #{userimg,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      phoneNum = #{phonenum,jdbcType=VARCHAR},
+      gradeId = #{gradeid,jdbcType=INTEGER},
+      mnp1_openId = #{mnp1Openid,jdbcType=VARCHAR},
+      created = #{created,jdbcType=TIMESTAMP},
+      updated = #{updated,jdbcType=TIMESTAMP},
+      openId = #{openid,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      knowlegeSpace = #{knowlegespace,jdbcType=VARCHAR},
+      shares = #{shares,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      wxToken = #{wxtoken,jdbcType=VARCHAR},
+      union_id = #{unionId,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER}
+    where studentId = #{studentid,jdbcType=BIGINT}
+  </update>
+</mapper>

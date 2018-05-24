@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pythe.mapper.RecommendationsMapper" >
+  <resultMap id="BaseResultMap" type="com.pythe.pojo.Recommendations" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="news_id" property="newsId" jdbcType="BIGINT" />
+    <result column="derive_time" property="deriveTime" jdbcType="TIMESTAMP" />
+    <result column="feedback" property="feedback" jdbcType="BIT" />
+    <result column="derive_algorithm" property="deriveAlgorithm" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, news_id, derive_time, feedback, derive_algorithm
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pythe.pojo.RecommendationsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from recommendations
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from recommendations
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from recommendations
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.pythe.pojo.RecommendationsExample" >
+    delete from recommendations
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.pythe.pojo.Recommendations" >
+    insert into recommendations (id, user_id, news_id, 
+      derive_time, feedback, derive_algorithm
+      )
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{newsId,jdbcType=BIGINT}, 
+      #{deriveTime,jdbcType=TIMESTAMP}, #{feedback,jdbcType=BIT}, #{deriveAlgorithm,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pythe.pojo.Recommendations" >
+    insert into recommendations
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="newsId != null" >
+        news_id,
+      </if>
+      <if test="deriveTime != null" >
+        derive_time,
+      </if>
+      <if test="feedback != null" >
+        feedback,
+      </if>
+      <if test="deriveAlgorithm != null" >
+        derive_algorithm,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="newsId != null" >
+        #{newsId,jdbcType=BIGINT},
+      </if>
+      <if test="deriveTime != null" >
+        #{deriveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="feedback != null" >
+        #{feedback,jdbcType=BIT},
+      </if>
+      <if test="deriveAlgorithm != null" >
+        #{deriveAlgorithm,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.pythe.pojo.RecommendationsExample" resultType="java.lang.Integer" >
+    select count(*) from recommendations
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update recommendations
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.newsId != null" >
+        news_id = #{record.newsId,jdbcType=BIGINT},
+      </if>
+      <if test="record.deriveTime != null" >
+        derive_time = #{record.deriveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.feedback != null" >
+        feedback = #{record.feedback,jdbcType=BIT},
+      </if>
+      <if test="record.deriveAlgorithm != null" >
+        derive_algorithm = #{record.deriveAlgorithm,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update recommendations
+    set id = #{record.id,jdbcType=BIGINT},
+      user_id = #{record.userId,jdbcType=BIGINT},
+      news_id = #{record.newsId,jdbcType=BIGINT},
+      derive_time = #{record.deriveTime,jdbcType=TIMESTAMP},
+      feedback = #{record.feedback,jdbcType=BIT},
+      derive_algorithm = #{record.deriveAlgorithm,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pythe.pojo.Recommendations" >
+    update recommendations
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="newsId != null" >
+        news_id = #{newsId,jdbcType=BIGINT},
+      </if>
+      <if test="deriveTime != null" >
+        derive_time = #{deriveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="feedback != null" >
+        feedback = #{feedback,jdbcType=BIT},
+      </if>
+      <if test="deriveAlgorithm != null" >
+        derive_algorithm = #{deriveAlgorithm,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.Recommendations" >
+    update recommendations
+    set user_id = #{userId,jdbcType=BIGINT},
+      news_id = #{newsId,jdbcType=BIGINT},
+      derive_time = #{deriveTime,jdbcType=TIMESTAMP},
+      feedback = #{feedback,jdbcType=BIT},
+      derive_algorithm = #{deriveAlgorithm,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <resultMap id="RecommendationStatisticsMap" type="com.pythe.pojo.VRecommendationStatistics" >
+
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    
+    <result column="recommend_num" property="recommendNum" jdbcType="BIGINT" />
+    
+  </resultMap>
+  
+  <select id="queryCertainUserRecentlyRecommendations" resultMap="BaseResultMap"  >
+    select 
+    
+    <include refid="Base_Column_List" />
+    from recommendations 
+    where derive_time &gt; #{date} and user_id = #{userId}
+  </select>
+  
+  
+  <select id="queryRecommendationStatisticsAfterDate" resultMap="RecommendationStatisticsMap" >
+    select user_id,count(*) as recommend_num 
+    from recommendations 
+    where derive_time &gt; #{date} and user_id = #{userId} 
+    group by user_id 
+
+  </select>
+  
+</mapper>

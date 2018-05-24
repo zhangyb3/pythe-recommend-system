@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="派知" />
+    <meta name="description" content="派知" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>派知</title>
+    <link rel="stylesheet" href="./css/share.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+
+<div id="author_description">
+	<!--
+	<div id="author_description_text">
+		<div id="author_name"></div>
+		<div>发表了笔记</div>
+		<div id="time"></div>
+	</div>
+	-->
+	
+	<div id="author_description_text"></div>
+	<div id="push">发表了笔记</div>
+</div>
+
+<div id="total_container">
+
+	<div id="total_content">
+		
+		<div style="height: 20px;"></div>
+		<div id="note_container">
+			<div id="note">
+			</div>
+		</div>
+		<div style="height: 20px;"></div>
+		
+		
+		<div id="essay_container">
+			<div id="left" style="width: 10%;">
+				<div style="font-size: 0.8rem;">原文</div>
+			</div>
+			
+			<div id="right" style="width: 90%;">
+				<div id="content_container">
+					<div id="left_bracket_container">
+						<img id="bracket" src="images/left_bracket.png">
+					</div>
+					<div id="content">
+					</div>
+					<div id="right_bracket_container">
+						<img id="bracket" src="images/right_bracket.png">
+					</div>
+				</div>
+				
+				<div id="origin"></div>
+			</div>
+			
+			
+		</div>
+		
+		
+		
+		<div style="height: 30px;"></div>
+		
+	</div>     
+     
+</div>
+
+<div id="download_bar">
+    
+    <div id="QR_code_container">
+    	<img id="QR_code" src="images/QR_code.png">
+    </div>
+    <div id="download_hint_container">
+    	<div id="app_name">派知阅读</div>
+    	<div id="app_hint">每天多学一点新东西</div>
+    </div>
+    
+</div>
+
+<div style="height: 30px;"></div>
+
+
+
+
+<script>
+    $.ajax({
+        type:'GET',
+        url:'https://www.pythe.cn/pythe-rest/rest/personal/note/share',
+        //dataType:"json",
+        //contentType: "application/json",
+        data:{
+            noteId: getParams("noteId"),
+        },
+        success:function(res){
+        	//alert(JSON.stringify(res));
+            updateTemplate(res.data);
+        },
+        error:function(err){
+            alert(JSON.stringify(err));
+        }
+    });
+    //更新内容
+    function updateTemplate(data){
+        //alert(JSON.stringify(data));
+        
+        var author_name = "";
+        if(data.username){
+            author_name = data.username;
+        }
+        //$("#author_name").html(author_name);
+        
+        var time = "";
+        if(data.time){
+        	time =  timeStamp2String(data.time);          
+        }
+        //$("#time").html(time);
+        
+        $("#author_description_text").html(author_name + "于" + time);
+        
+        var note = "";
+        if(data.note){
+            note = data.note;
+        }
+        $("#note").html(note);
+        
+        var content = "";
+        if(data.content){
+            content = data.content;
+        }
+        $("#content").html(content);
+        
+        var title = "";
+        if(data.title){
+            title = "——《" + data.title + "》";
+        }
+        $("#origin").html(title);
+    }
+    function getParams(name){//获取url上的参数
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!= null){
+        	var parameters = unescape(decodeURIComponent(r[2]));
+        	//alert(parameters);
+            return parameters;
+        }
+        return null;
+    }
+    function toDownload(){
+        var userAgentInfo = navigator.userAgent.toLowerCase();
+        if (userAgentInfo.indexOf('android') > 0)
+        {
+            location.href='http://app.qq.com/#id=detail&appid=1106272259';
+        }else if(userAgentInfo.indexOf('win') > 0){
+            location.href='http://sj.qq.com/myapp/detail.htm?apkName=com.dace.textreader';
+        }else if(userAgentInfo.indexOf('iphone') > 0){
+            alert('在开发中，带来不便请谅解');
+        }else if(userAgentInfo.indexOf('ipad') > 0){
+            alert('暂无ipad版');
+        }else if(userAgentInfo.indexOf('ipod') > 0){
+            alert('暂无ipod版');
+        }else{
+            alert('暂无'+userAgentInfo+'版');
+        }
+
+        //else if(userAgentInfo.indexOf('windows phone') > 0){
+        //alert('暂无电脑版');
+        //}
+
+    }
+    
+    function timeStamp2String (time){
+        var datetime = new Date();
+         datetime.setTime(time);
+         var year = datetime.getFullYear();
+         var month = datetime.getMonth() + 1;
+         var date = datetime.getDate();
+         var hour = datetime.getHours();
+         var minute = datetime.getMinutes();
+         var second = datetime.getSeconds();
+         var mseconds = datetime.getMilliseconds();
+         return year + "." + month + "." + date+" "//+hour+":"+minute+":"+second+"."+mseconds;
+	};
+
+</script>
+
+</body>
+</html>

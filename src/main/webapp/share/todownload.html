@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>loading...</title>
+</head>
+<body>
+<script>
+    toDownload();
+    function toDownload(){
+        var userAgentInfo = navigator.userAgent.toLowerCase();
+        if (userAgentInfo.indexOf('android') > 0)
+        {
+            location.href='http://app.qq.com/#id=detail&appid=1106272259';
+        }else if(userAgentInfo.indexOf('win') > 0){
+            location.href='http://sj.qq.com/myapp/detail.htm?apkName=com.dace.textreader';
+        }else if(userAgentInfo.indexOf('iphone') > 0){
+            alert('在开发中，带来不便请谅解');
+        }else if(userAgentInfo.indexOf('ipad') > 0){
+            alert('暂无ipad版');
+        }else if(userAgentInfo.indexOf('ipod') > 0){
+            alert('暂无ipod版');
+        }else{
+            alert('暂无'+userAgentInfo+'版');
+        }
+
+        //else if(userAgentInfo.indexOf('windows phone') > 0){
+        //alert('暂无电脑版');
+        //}
+
+    }
+</script>
+</body>
+</html>

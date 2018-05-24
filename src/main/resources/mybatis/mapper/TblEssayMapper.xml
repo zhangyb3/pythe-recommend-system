@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pythe.mapper.TblEssayMapper" >
+  <resultMap id="BaseResultMap" type="com.pythe.pojo.TblEssay" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="level1" property="level1" jdbcType="VARCHAR" />
+    <result column="level2" property="level2" jdbcType="VARCHAR" />
+    <result column="level3" property="level3" jdbcType="VARCHAR" />
+    <result column="shared_quantity" property="sharedQuantity" jdbcType="BIGINT" />
+    <result column="like_num" property="likeNum" jdbcType="BIGINT" />
+    <result column="collect_num" property="collectNum" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="pv" property="pv" jdbcType="BIGINT" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="audio" property="audio" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="level4" property="level4" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="score" property="score" jdbcType="INTEGER" />
+    <result column="grade" property="grade" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.pythe.pojo.TblEssayWithBLOBs" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="recommendation" property="recommendation" jdbcType="LONGVARCHAR" />
+    <result column="content_text" property="contentText" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, type, title, level1, level2, level3, shared_quantity, like_num, collect_num, 
+    status, pv, time, audio, image, level4, author, score, grade
+  </sql>
+  <sql id="Blob_Column_List" >
+    content, recommendation, content_text
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.pythe.pojo.TblEssayExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_essay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pythe.pojo.TblEssayExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_essay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_essay
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_essay
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.pythe.pojo.TblEssayExample" >
+    delete from tbl_essay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.pythe.pojo.TblEssayWithBLOBs" >
+    insert into tbl_essay (id, type, title, 
+      level1, level2, level3, 
+      shared_quantity, like_num, collect_num, 
+      status, pv, time, 
+      audio, image, level4, 
+      author, score, grade, 
+      content, recommendation, content_text
+      )
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{level1,jdbcType=VARCHAR}, #{level2,jdbcType=VARCHAR}, #{level3,jdbcType=VARCHAR}, 
+      #{sharedQuantity,jdbcType=BIGINT}, #{likeNum,jdbcType=BIGINT}, #{collectNum,jdbcType=BIGINT}, 
+      #{status,jdbcType=INTEGER}, #{pv,jdbcType=BIGINT}, #{time,jdbcType=TIMESTAMP}, 
+      #{audio,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{level4,jdbcType=VARCHAR}, 
+      #{author,jdbcType=VARCHAR}, #{score,jdbcType=INTEGER}, #{grade,jdbcType=INTEGER}, 
+      #{content,jdbcType=LONGVARCHAR}, #{recommendation,jdbcType=LONGVARCHAR}, #{contentText,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pythe.pojo.TblEssayWithBLOBs" >
+    insert into tbl_essay
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="level1 != null" >
+        level1,
+      </if>
+      <if test="level2 != null" >
+        level2,
+      </if>
+      <if test="level3 != null" >
+        level3,
+      </if>
+      <if test="sharedQuantity != null" >
+        shared_quantity,
+      </if>
+      <if test="likeNum != null" >
+        like_num,
+      </if>
+      <if test="collectNum != null" >
+        collect_num,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="pv != null" >
+        pv,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="audio != null" >
+        audio,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="level4 != null" >
+        level4,
+      </if>
+      <if test="author != null" >
+        author,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="recommendation != null" >
+        recommendation,
+      </if>
+      <if test="contentText != null" >
+        content_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="level1 != null" >
+        #{level1,jdbcType=VARCHAR},
+      </if>
+      <if test="level2 != null" >
+        #{level2,jdbcType=VARCHAR},
+      </if>
+      <if test="level3 != null" >
+        #{level3,jdbcType=VARCHAR},
+      </if>
+      <if test="sharedQuantity != null" >
+        #{sharedQuantity,jdbcType=BIGINT},
+      </if>
+      <if test="likeNum != null" >
+        #{likeNum,jdbcType=BIGINT},
+      </if>
+      <if test="collectNum != null" >
+        #{collectNum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="pv != null" >
+        #{pv,jdbcType=BIGINT},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="audio != null" >
+        #{audio,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="level4 != null" >
+        #{level4,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="recommendation != null" >
+        #{recommendation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contentText != null" >
+        #{contentText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.pythe.pojo.TblEssayExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_essay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tbl_essay
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null" >
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level1 != null" >
+        level1 = #{record.level1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level2 != null" >
+        level2 = #{record.level2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level3 != null" >
+        level3 = #{record.level3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sharedQuantity != null" >
+        shared_quantity = #{record.sharedQuantity,jdbcType=BIGINT},
+      </if>
+      <if test="record.likeNum != null" >
+        like_num = #{record.likeNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.collectNum != null" >
+        collect_num = #{record.collectNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.pv != null" >
+        pv = #{record.pv,jdbcType=BIGINT},
+      </if>
+      <if test="record.time != null" >
+        time = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.audio != null" >
+        audio = #{record.audio,jdbcType=VARCHAR},
+      </if>
+      <if test="record.image != null" >
+        image = #{record.image,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level4 != null" >
+        level4 = #{record.level4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.author != null" >
+        author = #{record.author,jdbcType=VARCHAR},
+      </if>
+      <if test="record.score != null" >
+        score = #{record.score,jdbcType=INTEGER},
+      </if>
+      <if test="record.grade != null" >
+        grade = #{record.grade,jdbcType=INTEGER},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.recommendation != null" >
+        recommendation = #{record.recommendation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.contentText != null" >
+        content_text = #{record.contentText,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tbl_essay
+    set id = #{record.id,jdbcType=BIGINT},
+      type = #{record.type,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      level1 = #{record.level1,jdbcType=VARCHAR},
+      level2 = #{record.level2,jdbcType=VARCHAR},
+      level3 = #{record.level3,jdbcType=VARCHAR},
+      shared_quantity = #{record.sharedQuantity,jdbcType=BIGINT},
+      like_num = #{record.likeNum,jdbcType=BIGINT},
+      collect_num = #{record.collectNum,jdbcType=BIGINT},
+      status = #{record.status,jdbcType=INTEGER},
+      pv = #{record.pv,jdbcType=BIGINT},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      audio = #{record.audio,jdbcType=VARCHAR},
+      image = #{record.image,jdbcType=VARCHAR},
+      level4 = #{record.level4,jdbcType=VARCHAR},
+      author = #{record.author,jdbcType=VARCHAR},
+      score = #{record.score,jdbcType=INTEGER},
+      grade = #{record.grade,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=LONGVARCHAR},
+      recommendation = #{record.recommendation,jdbcType=LONGVARCHAR},
+      content_text = #{record.contentText,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tbl_essay
+    set id = #{record.id,jdbcType=BIGINT},
+      type = #{record.type,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      level1 = #{record.level1,jdbcType=VARCHAR},
+      level2 = #{record.level2,jdbcType=VARCHAR},
+      level3 = #{record.level3,jdbcType=VARCHAR},
+      shared_quantity = #{record.sharedQuantity,jdbcType=BIGINT},
+      like_num = #{record.likeNum,jdbcType=BIGINT},
+      collect_num = #{record.collectNum,jdbcType=BIGINT},
+      status = #{record.status,jdbcType=INTEGER},
+      pv = #{record.pv,jdbcType=BIGINT},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      audio = #{record.audio,jdbcType=VARCHAR},
+      image = #{record.image,jdbcType=VARCHAR},
+      level4 = #{record.level4,jdbcType=VARCHAR},
+      author = #{record.author,jdbcType=VARCHAR},
+      score = #{record.score,jdbcType=INTEGER},
+      grade = #{record.grade,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pythe.pojo.TblEssayWithBLOBs" >
+    update tbl_essay
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="level1 != null" >
+        level1 = #{level1,jdbcType=VARCHAR},
+      </if>
+      <if test="level2 != null" >
+        level2 = #{level2,jdbcType=VARCHAR},
+      </if>
+      <if test="level3 != null" >
+        level3 = #{level3,jdbcType=VARCHAR},
+      </if>
+      <if test="sharedQuantity != null" >
+        shared_quantity = #{sharedQuantity,jdbcType=BIGINT},
+      </if>
+      <if test="likeNum != null" >
+        like_num = #{likeNum,jdbcType=BIGINT},
+      </if>
+      <if test="collectNum != null" >
+        collect_num = #{collectNum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="pv != null" >
+        pv = #{pv,jdbcType=BIGINT},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="audio != null" >
+        audio = #{audio,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="level4 != null" >
+        level4 = #{level4,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        author = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="recommendation != null" >
+        recommendation = #{recommendation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="contentText != null" >
+        content_text = #{contentText,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pythe.pojo.TblEssayWithBLOBs" >
+    update tbl_essay
+    set type = #{type,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      level1 = #{level1,jdbcType=VARCHAR},
+      level2 = #{level2,jdbcType=VARCHAR},
+      level3 = #{level3,jdbcType=VARCHAR},
+      shared_quantity = #{sharedQuantity,jdbcType=BIGINT},
+      like_num = #{likeNum,jdbcType=BIGINT},
+      collect_num = #{collectNum,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      pv = #{pv,jdbcType=BIGINT},
+      time = #{time,jdbcType=TIMESTAMP},
+      audio = #{audio,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      level4 = #{level4,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR},
+      recommendation = #{recommendation,jdbcType=LONGVARCHAR},
+      content_text = #{contentText,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.TblEssay" >
+    update tbl_essay
+    set type = #{type,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      level1 = #{level1,jdbcType=VARCHAR},
+      level2 = #{level2,jdbcType=VARCHAR},
+      level3 = #{level3,jdbcType=VARCHAR},
+      shared_quantity = #{sharedQuantity,jdbcType=BIGINT},
+      like_num = #{likeNum,jdbcType=BIGINT},
+      collect_num = #{collectNum,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      pv = #{pv,jdbcType=BIGINT},
+      time = #{time,jdbcType=TIMESTAMP},
+      audio = #{audio,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      level4 = #{level4,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
