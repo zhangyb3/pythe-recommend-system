@@ -511,6 +511,32 @@ public class RecommendKit
 			i++;
 		}
 	}
+	
+	/**
+	 * 去除数量上超过为算法设置的推荐结果上限值的推荐结果
+	 * 
+	 * @param set
+	 * @param N
+	 * @return
+	 */
+	public void removeOverEssays(Set<Long> set, int N)
+	{
+		int i = 0;
+		Iterator<Long> ite = set.iterator();
+		while (ite.hasNext())
+		{
+			if (i >= N)
+			{
+				ite.remove();
+				ite.next();
+			}
+			else
+			{
+				ite.next();
+			}
+			i++;
+		}
+	}
 
 	
 	/**

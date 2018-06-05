@@ -25,14 +25,18 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.Session;
 import com.pythe.algorithms.PropGetKit;
 import com.pythe.algorithms.RecommendAlgorithm;
 import com.pythe.algorithms.RecommendKit;
+import com.pythe.common.pojo.PytheResult;
+import com.pythe.common.utils.JsonUtils;
 import com.pythe.mapper.NewsLogsMapper;
 import com.pythe.mapper.NewsMapper;
 import com.pythe.mapper.RecommendationsMapper;
+import com.pythe.mapper.TblEssayKeywordMapper;
 import com.pythe.mapper.TblEssayMapper;
 import com.pythe.mapper.TblStudentEssayPreferenceMapper;
 import com.pythe.mapper.TblStudentEssayRecommendationMapper;
@@ -42,7 +46,9 @@ import com.pythe.mapper.VEssayViewLogMapper;
 import com.pythe.pojo.News;
 import com.pythe.pojo.NewsExample;
 import com.pythe.pojo.NewsWithBLOBs;
+import com.pythe.pojo.TblEssay;
 import com.pythe.pojo.TblEssayExample;
+import com.pythe.pojo.TblEssayKeyword;
 import com.pythe.pojo.TblEssayWithBLOBs;
 
 /**
@@ -88,6 +94,8 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 //	@Autowired
 	private RecommendationsMapper recommendationsMapper;
 	
+	private TblEssayKeywordMapper essayKeywordMapper;
+	
 	private static SqlSessionFactory sqlSessionFactory;
 	
 	private static SqlSession session;
@@ -110,6 +118,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 		this.essayViewLogMapper = session.getMapper(VEssayViewLogMapper.class);
 		this.studentEssayPreferenceMapper = session.getMapper(TblStudentEssayPreferenceMapper.class);
 		this.studentEssayRecommendationMapper = session.getMapper(TblStudentEssayRecommendationMapper.class);
+		this.essayKeywordMapper = session.getMapper(TblEssayKeywordMapper.class);
 		
 		recommendKit = new RecommendKit();
 		
@@ -155,7 +164,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 			List<NewsWithBLOBs> newsList = newsMapper.queryNewsAfterDate(RecommendKit.getInRecDate());
 			for (NewsWithBLOBs news:newsList)
 			{
-				List<Keyword> keywords = TFIDF.getTFIDE(news.getTitle(), news.getContent(), KEY_WORDS_NUM);
+				List<Keyword> keywords = TFIDF.getTFIDF(news.getTitle(), news.getContent(), KEY_WORDS_NUM);
 				newsKeyWordsMap.put(news.getId(), keywords);
 				System.out.println("news " + news.getId() + " , "  );
 				for (Keyword keyword : keywords) {
@@ -306,7 +315,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 			List<TblEssayWithBLOBs> essays = essayMapper.selectByExampleWithBLOBs(essayExample);
 			for (TblEssayWithBLOBs essay:essays)
 			{
-				List<Keyword> keywords = TFIDF.getTFIDE(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
+				List<Keyword> keywords = TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
 				essayKeyWordsMap.put(essay.getId(), keywords);
 				System.out.println("news " + essay.getId() + " , "  );
 				for (Keyword keyword : keywords) {
@@ -363,4 +372,268 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 		}
 		return;
 	}
+	
+	/*
+	 * 准备预选材料关键词
+	 */
+	public void genrateMaterialKeyword() throws Exception {
+		
+		
+		this.essayMapper = session.getMapper(TblEssayMapper.class);
+		this.essayKeywordMapper = session.getMapper(TblEssayKeywordMapper.class);
+		
+		try
+		{
+			
+			// 文章及对应关键词列表的Map
+			HashMap<Long, List<Keyword>> essayKeyWordsMap = new HashMap<Long, List<Keyword>>();
+			
+
+			
+			TblEssayExample essayExample = new TblEssayExample();
+			essayExample.createCriteria().andIdIsNotNull();
+			List<TblEssayWithBLOBs> essays = essayMapper.selectByExampleWithBLOBs(essayExample);
+			for (TblEssayWithBLOBs essay:essays)
+			{
+				List<Keyword> keywords = TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
+				essayKeyWordsMap.put(essay.getId(), keywords);
+				
+				System.out.println("essay " + essay.getId() + " , "  );
+				TblEssayKeyword essayKeyword = new TblEssayKeyword();
+				JSONArray kws = new JSONArray();
+				for (Keyword keyword : keywords) {
+					System.out.println("      " + keyword  );
+					
+					JSONObject kw = new JSONObject();
+					kw.put("name", keyword.getName());
+					kw.put("score", keyword.getScore());
+					kw.put("freq", keyword.getFreq());
+					kws.add(kw);
+				}
+				essayKeyword.setEssayId(essay.getId());
+				essayKeyword.setEssayType(essay.getType());
+				essayKeyword.setKeyword(JSONArray.toJSONString(kws));
+				System.out.println("essay " + essay.getId() + " , " + JSONArray.toJSONString(kws));
+				essayKeywordMapper.insert(essayKeyword);
+				
+			}
+			
+			session.commit();
+			
+			System.out.println("keyword generation finished at "+new Date());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return;
+	}
+	
+	
+	public void recommendByEssay(List<Long> students) throws Exception {
+		
+		this.studentMapper = session.getMapper(TblStudentMapper.class);
+		this.essayMapper = session.getMapper(TblEssayMapper.class);
+		
+		try
+		{
+			int count=0;
+			System.out.println("CB recommend start at "+ new Date());
+			
+			// 首先进行用户喜好关键词列表的衰减更新+用户当日历史浏览记录的更新
+			UserPrefRefresher userPrefRefresher = new UserPrefRefresher();
+			userPrefRefresher.refreshStudentPreference(students);
+			System.out.println("==========================> student quantity : " + students.size());
+			
+			// 文章及对应关键词列表的Map
+			HashMap<Long, List<Keyword>> essayKeyWordsMap = new HashMap<Long, List<Keyword>>();
+			HashMap<Long, Integer> essayTypeMap = new HashMap<Long, Integer>();
+			// 用户喜好关键词列表
+			HashMap<Long, CustomizedHashMap<Integer, CustomizedHashMap<String, Double>>> userPrefListMap = recommendKit
+					.getStudentEssayPrefListMap(students);
+
+			
+			for (Long studentId : students) {
+				System.out.println("!!!!!!! student " + studentId + " : " + userPrefListMap.get(studentId));;
+			}
+			
+			TblEssayExample essayExample = new TblEssayExample();
+			essayExample.createCriteria().andIdIsNotNull();
+			List<TblEssayWithBLOBs> essays = essayMapper.selectByExampleWithBLOBs(essayExample);
+			for (TblEssayWithBLOBs essay:essays)
+			{
+				List<Keyword> keywords = TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
+				essayKeyWordsMap.put(essay.getId(), keywords);
+				System.out.println("news " + essay.getId() + " , "  );
+				for (Keyword keyword : keywords) {
+					System.out.println("      " + keyword  );
+				}
+				essayTypeMap.put(essay.getId(), essay.getType());
+			}
+
+			for (Long userId : students)
+			{
+				Map<Long, Double> tempMatchMap = new HashMap<Long, Double>();
+				Iterator<Long> ite = essayKeyWordsMap.keySet().iterator();
+				while (ite.hasNext())
+				{
+					Long newsId = ite.next();
+					int moduleId = essayTypeMap.get(newsId);
+					if (null != userPrefListMap.get(userId).get(moduleId))
+						tempMatchMap.put(newsId,
+								getMatchValue(userPrefListMap.get(userId).get(moduleId), essayKeyWordsMap.get(newsId)));
+					else
+						continue;
+				}
+				System.err.println("============================> temp match : " + JSONObject.toJSONString(tempMatchMap));
+				// 去除匹配值为0的项目
+				removeZeroItem(tempMatchMap);
+				if (!(tempMatchMap.toString().equals("{}")))
+				{
+					tempMatchMap = sortMapByValue(tempMatchMap);
+					Set<Long> toBeRecommended=tempMatchMap.keySet();
+					System.out.println("======================> to be recommended : " + toBeRecommended.size());
+					for (Long rec : toBeRecommended) {
+						System.out.println(rec);
+					}
+					
+					//过滤掉已经推荐过的文章
+					recommendKit.filterRecommendedEssay(toBeRecommended,userId);
+					//过滤掉用户已经看过的文章
+					recommendKit.filterViewedEssay(toBeRecommended, userId);
+					//如果可推荐文章数目超过了系统默认为CB算法设置的单日推荐上限数（N），则去掉一部分多余的可推荐新闻，剩下的N个新闻才进行推荐
+					if(toBeRecommended.size()>N){
+
+					}
+					System.out.println("fiter: " + toBeRecommended.size());
+					recommendKit.insertEssayRecommendation(userId, toBeRecommended,RecommendAlgorithm.CB);
+					count+=toBeRecommended.size();
+				}
+			}
+			System.out.println("CB recommend has contributed " + (count/students.size()) + " recommending news on average");
+			System.out.println("CB recommend finished at "+new Date());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return;
+	}
+	
+
+	public PytheResult recommendEverytime(Long recommendStudentId) {
+		
+		this.studentMapper = session.getMapper(TblStudentMapper.class);
+		this.essayMapper = session.getMapper(TblEssayMapper.class);
+		this.essayKeywordMapper = session.getMapper(TblEssayKeywordMapper.class);
+		
+		Set<Long> toBeRecommended = null;
+		List<Long> students = new ArrayList<Long>();
+		students.add(recommendStudentId);
+		
+		try
+		{
+			int count=0;
+			System.out.println("CB recommend start at "+ new Date());
+			
+			// 首先进行用户喜好关键词列表的衰减更新+用户当日历史浏览记录的更新
+			UserPrefRefresher userPrefRefresher = new UserPrefRefresher();
+			userPrefRefresher.refreshOneStudentPreference(recommendStudentId);
+			System.out.println("==========================> student quantity : " + students.size());
+			
+			// 文章及对应关键词列表的Map
+			HashMap<Long, List<Keyword>> essayKeyWordsMap = new HashMap<Long, List<Keyword>>();
+			HashMap<Long, Integer> essayTypeMap = new HashMap<Long, Integer>();
+			// 用户喜好关键词列表
+			HashMap<Long, CustomizedHashMap<Integer, CustomizedHashMap<String, Double>>> userPrefListMap = recommendKit
+					.getStudentEssayPrefListMap(students);
+
+			
+			for (Long studentId : students) {
+				System.out.println("!!!!!!! student " + studentId + " : " + userPrefListMap.get(studentId));;
+			}
+			
+			TblEssayExample essayExample = new TblEssayExample();
+			essayExample.createCriteria();
+			List<TblEssay> essays = essayMapper.selectByExample(essayExample);
+			System.out.println("run to this line !");
+			for (TblEssay essay:essays)
+			{
+				//从预计算结果中读取keywords
+				TblEssayKeyword essayKeywordRecord = essayKeywordMapper.selectByPrimaryKey(essay.getId());
+				System.out.println(essayKeywordRecord.getKeyword());
+				JSONArray keywordArray = JSONArray.parseArray(essayKeywordRecord.getKeyword());
+				List<Keyword> keywords = new ArrayList<Keyword>();
+				
+				for (Iterator iterator = keywordArray.iterator(); iterator.hasNext();) {
+					JSONObject kw = (JSONObject) iterator.next();
+					Keyword k = new Keyword(kw.getString("name"), kw.getDouble("score"));
+					keywords.add(k);
+					System.out.println(k + " finish !");
+				}
+				
+				
+						
+				essayKeyWordsMap.put(essay.getId(), keywords);
+				System.out.println("essay " + essay.getId() + " , "  );
+				for (Keyword keyword : keywords) {
+					System.out.println("      " + keyword  );
+				}
+				essayTypeMap.put(essay.getId(), essay.getType());
+			}
+
+			for (Long userId : students)
+			{
+				Map<Long, Double> tempMatchMap = new HashMap<Long, Double>();
+				Iterator<Long> ite = essayKeyWordsMap.keySet().iterator();
+				while (ite.hasNext())
+				{
+					Long eId = ite.next();
+					int tId = essayTypeMap.get(eId);
+					if (null != userPrefListMap.get(userId).get(tId))
+						tempMatchMap.put(eId,
+								getMatchValue(userPrefListMap.get(userId).get(tId), essayKeyWordsMap.get(eId)));
+					else
+						continue;
+				}
+				System.err.println("============================> temp match : " + JSONObject.toJSONString(tempMatchMap));
+				// 去除匹配值为0的项目
+				removeZeroItem(tempMatchMap);
+				if (!(tempMatchMap.toString().equals("{}")))
+				{
+					tempMatchMap = sortMapByValue(tempMatchMap);
+					toBeRecommended=tempMatchMap.keySet();
+					System.out.println("======================> to be recommended : " + toBeRecommended.size());
+					for (Long rec : toBeRecommended) {
+						System.out.println(rec + "," + tempMatchMap.get(rec));
+					}
+					
+					//过滤掉已经推荐过的文章
+					recommendKit.filterRecommendedEssay(toBeRecommended,userId);
+					//过滤掉用户已经看过的文章
+					recommendKit.filterViewedEssay(toBeRecommended, userId);
+					//如果可推荐文章数目超过了系统默认为CB算法设置的单日推荐上限数（N），则去掉一部分多余的可推荐新闻，剩下的N个新闻才进行推荐
+					if(toBeRecommended.size()>N){
+						recommendKit.removeOverEssays(toBeRecommended,N);
+					}
+					System.out.println("fiter: " + toBeRecommended.size());
+//					recommendKit.insertEssayRecommendation(userId, toBeRecommended,RecommendAlgorithm.CB);
+					count+=toBeRecommended.size();
+					for (Long rec : toBeRecommended) {
+						System.out.println("!!! " + rec + "," + tempMatchMap.get(rec));
+					}
+				}
+			}
+			System.out.println("CB recommend has contributed " + (count/students.size()) + " recommending news on average");
+			System.out.println("CB recommend finished at "+new Date());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return PytheResult.ok(toBeRecommended);
+	}
+	
+	
+	
 }

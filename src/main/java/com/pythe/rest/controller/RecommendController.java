@@ -63,5 +63,21 @@ public class RecommendController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/recommend/essay/everytime", method = RequestMethod.POST)
+	@ResponseBody
+	public PytheResult recommendEverytime(
+//			@RequestHeader(value="test") String test,
+			@RequestBody String parameters
+			) throws Exception {
+		
+		
+		return recommendService.recommendEssayEverytime(parameters);
+
+		
+		
+	}
+	
+	
 
 }

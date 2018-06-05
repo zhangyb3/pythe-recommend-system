@@ -110,8 +110,8 @@ private TblStudentMapper studentMapper;
 	//设置TFIDF提取的关键词数目
 	private static final int KEY_WORDS_NUM = 10;
 	
-	//每日衰减系数
-	private static final double DEC_COEE=0.7;
+	//每次衰减系数
+	private static final double DEC_COEE=0.85;
 	
 	
 	public void refresh(){
@@ -364,7 +364,7 @@ private TblStudentMapper studentMapper;
 			newsExample.createCriteria().andIdIn(list);
 			List<NewsWithBLOBs> newsList = newsMapper.selectByExampleWithBLOBs(newsExample);
 			for(NewsWithBLOBs news:newsList){
-				newsTFIDFMap.put(String.valueOf(news.getId()), TFIDF.getTFIDE(news.getTitle(), news.getContent(),KEY_WORDS_NUM));
+				newsTFIDFMap.put(String.valueOf(news.getId()), TFIDF.getTFIDF(news.getTitle(), news.getContent(),KEY_WORDS_NUM));
 				newsTFIDFMap.put(news.getId()+"moduleid", news.getModuleId());
 			}
 		}
@@ -385,7 +385,7 @@ private TblStudentMapper studentMapper;
 		this.essayViewLogMapper = session.getMapper(VEssayViewLogMapper.class);
 		this.studentEssayPreferenceMapper = session.getMapper(TblStudentEssayPreferenceMapper.class);
 		
-		//用户浏览新闻纪
+		//用户浏览新闻纪录
 		HashMap<Long,ArrayList<Long>> userBrowsedMap = getViewedHistoryMap(students);
 		//如果前一天没有浏览记录（比如新闻门户出状况暂时关停的情况下，或者初期用户较少的时候均可能出现这种情况），则不需要执行后续更新步骤
 		if(userBrowsedMap.size()==0)
@@ -481,7 +481,7 @@ private TblStudentMapper studentMapper;
 			essayExample.createCriteria().andIdIn(Arrays.asList(getViewedEssaysSet(students).toArray(new Long[getViewedEssaysSet(students).size()])));
 			List<TblEssayWithBLOBs> essays = essayMapper.selectByExampleWithBLOBs(essayExample);
 			for(TblEssayWithBLOBs essay:essays){
-				essayTFIDFMap.put(String.valueOf(essay.getId()), TFIDF.getTFIDE(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM));
+				essayTFIDFMap.put(String.valueOf(essay.getId()), TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM));
 				essayTFIDFMap.put(essay.getId()+"type", essay.getType());
 			}
 		}
@@ -522,15 +522,19 @@ private TblStudentMapper studentMapper;
 		try
 		{
 
-			List<VEssayViewLog> newslogsList = essayViewLogMapper.queryEssayViewLogsTheDate(RecommendKit.getSpecificDayFormat(0));
-			for(VEssayViewLog essayViewLog:newslogsList){
-				if(userBrowsedMap.containsKey(essayViewLog.getStudentId())){
-					userBrowsedMap.get(essayViewLog.getStudentId()).add(essayViewLog.getEssayId());
+			List<VEssayViewLog> essayslogsList = essayViewLogMapper.queryEssayViewLogsTheDate(RecommendKit.getSpecificDayFormat(0));
+			for(VEssayViewLog essayViewLog:essayslogsList){
+				if(students.contains(essayViewLog.getStudentId()))
+				{
+					if(userBrowsedMap.containsKey(essayViewLog.getStudentId())){
+						userBrowsedMap.get(essayViewLog.getStudentId()).add(essayViewLog.getEssayId());
+					}
+					else{
+						userBrowsedMap.put(essayViewLog.getStudentId(), new ArrayList<Long>());
+						userBrowsedMap.get(essayViewLog.getStudentId()).add(essayViewLog.getEssayId());
+					}
 				}
-				else{
-					userBrowsedMap.put(essayViewLog.getStudentId(), new ArrayList<Long>());
-					userBrowsedMap.get(essayViewLog.getStudentId()).add(essayViewLog.getEssayId());
-				}
+				
 			}
 		}
 		catch (Exception e)
@@ -605,6 +609,90 @@ private TblStudentMapper studentMapper;
 			e.printStackTrace();
 		}
 				
+	}
+
+	public void refreshOneStudentPreference(Long studentId) {
+		
+		List<Long> students = new ArrayList<Long>();
+		students.add(studentId);
+		
+		//首先对用户的喜好关键词列表进行衰减更新
+		autoDecreaseStudentReference(students);
+		
+		//获得session实例  
+		SqlSession session = sqlSessionFactory.openSession();
+		this.essayViewLogMapper = session.getMapper(VEssayViewLogMapper.class);
+		this.studentEssayPreferenceMapper = session.getMapper(TblStudentEssayPreferenceMapper.class);
+		
+		//用户浏览新闻纪录
+		HashMap<Long,ArrayList<Long>> userBrowsedMap = getViewedHistoryMap(students);
+		//如果前一天没有浏览记录（比如新闻门户出状况暂时关停的情况下，或者初期用户较少的时候均可能出现这种情况），则不需要执行后续更新步骤
+		if(userBrowsedMap.size()==0)
+		{
+			System.out.println("no browse !!!");
+			return;
+		}
+		
+		for (Long key : userBrowsedMap.keySet()) {
+			System.out.println("user " + key + " ,");
+			ArrayList<Long> essayIds = userBrowsedMap.get(key);
+			for (Long essayId : essayIds) {
+				System.out.println("      " + essayId );
+			}
+		}
+		
+		//用户喜好关键词列表：userPrefListMap:<String(userid),String(json))>
+		HashMap<Long,CustomizedHashMap<Integer,CustomizedHashMap<String,Double>>> userPrefListMap=recommendKit.getStudentEssayPrefListMap(userBrowsedMap.keySet());
+		//文章对应关键词列表与类型ID：essayTFIDFMap:<String(essayId),List<Keyword>>,<String(type),Integer(type)>
+		HashMap<String,Object> essayTFIDFMap = getEssayTFIDFMap(students);
+		
+		//开始遍历用户浏览记录，更新用户喜好关键词列表
+		//对每个用户（外层循环），循环他所看过的每条文章（内层循环），对每个文章，更新它的关键词列表到用户的对应类型中
+		Iterator<Long> ite=userBrowsedMap.keySet().iterator();
+		
+		while(ite.hasNext()){
+			Long userId=ite.next();
+			ArrayList<Long> essayIds=userBrowsedMap.get(userId);
+			for(Long essayId:essayIds){
+				Integer essayType=(Integer) essayTFIDFMap.get(essayId+"type");
+				//获得对应类型的（关键词：喜好）map
+				CustomizedHashMap<String,Double> rateMap=userPrefListMap.get(userId).get(essayType);
+				//获得新闻的（关键词：TFIDF值）map
+				List<Keyword> keywordList=(List<Keyword>) essayTFIDFMap.get(essayId.toString());
+				Iterator<Keyword> keywordIte=keywordList.iterator();
+				while(keywordIte.hasNext()){
+					Keyword keyword=keywordIte.next();
+					String name=keyword.getName();
+					if(rateMap.containsKey(name)){
+						rateMap.put(name, rateMap.get(name)+keyword.getScore());
+					}
+					else{
+						rateMap.put(name,keyword.getScore());
+					}
+				}
+				userPrefListMap.get(userId);
+			}
+		}
+		Iterator<Long> iterator=userBrowsedMap.keySet().iterator();
+		while(iterator.hasNext()){
+			Long userId=iterator.next();
+			try
+			{
+				System.out.println("userPreList " + userId + " : " + (userPrefListMap.get(userId)));
+				TblStudentEssayPreference studentEssayPreference = studentEssayPreferenceMapper.selectByPrimaryKey(userId);
+				studentEssayPreference.setPreference( userPrefListMap.get(userId).toString() );
+				studentEssayPreference.setLastLogTime(new Date());
+				int updateResult = studentEssayPreferenceMapper.updateByPrimaryKeyWithBLOBs(studentEssayPreference);
+				session.commit();
+				System.out.println("！！！！！！！！！！！！ update result : " + updateResult);
+				System.out.println(studentEssayPreferenceMapper.selectByPrimaryKey(userId).getPreference());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 }

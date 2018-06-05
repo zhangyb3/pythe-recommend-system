@@ -121,6 +121,16 @@ public class TestServiceImpl implements TestService{
 		
 	}
 
+	@Override
+	public void generateMaterialKeyword() throws Exception {
+		
+		PropGetKit.loadProperties("paraConfig");
+		
+		ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender();
+		contentBasedRecommender.genrateMaterialKeyword();
+		
+	}
+
 
 
 }

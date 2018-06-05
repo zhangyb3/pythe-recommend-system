@@ -23,6 +23,7 @@ import com.pythe.common.utils.ExceptionUtil;
 import com.pythe.common.utils.FactoryUtils;
 import com.pythe.common.utils.HttpClientUtil;
 import com.pythe.contentbasedrecommend.ContentBasedRecommender;
+import com.pythe.contentbasedrecommend.UserPrefRefresher;
 import com.pythe.mapper.NewsLogsMapper;
 import com.pythe.mapper.NewsMapper;
 import com.pythe.mapper.RecommendationsMapper;
@@ -149,6 +150,28 @@ public class RecommendServiceImpl implements RecommendService{
 			ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender();
 			contentBasedRecommender.recommend(studentIds);
 		}
+		
+		return null;
+	}
+
+	@Override
+	public PytheResult recommendEssayEverytime(String parameters) throws Exception {
+		
+		PropGetKit.loadProperties("paraConfig");
+		
+		JSONObject p = JSONObject.parseObject(parameters);
+		String recommendMode = p.getString("mode");
+		Long studentId = p.getLong("studentId");
+		Long readingId = p.getLong("essayId");
+		
+		if(recommendMode.equals("CB"))
+		{
+			ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender();
+			return contentBasedRecommender.recommendEverytime(studentId);			
+						
+		}
+		
+		
 		
 		return null;
 	}

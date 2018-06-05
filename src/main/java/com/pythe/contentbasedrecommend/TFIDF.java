@@ -30,7 +30,7 @@ public class TFIDF
 	 * @param keyNums 返回的关键词数目
 	 * @return
 	 */
-	public static List<Keyword> getTFIDE(String title, String content,int keyNums)
+	public static List<Keyword> getTFIDF(String title, String content,int keyNums)
 	{
 		// String
 		// sentence="我今天很开心，所以一口气买了好多东西。然而我一不小心把本月预算透支了，现在有很不开心了，因为后面的日子得吃土了！";

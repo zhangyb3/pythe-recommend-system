@@ -83,5 +83,23 @@ public class TestController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/material/keyword", method = RequestMethod.POST)
+	@ResponseBody
+	public String generateMaterialKeyword(
+//			@RequestHeader(value="test") String test,
+			@RequestBody String parameters) throws Exception {
+		
+//		JSONObject params = JSONObject.parseObject(parameters);
+		
+		testService.generateMaterialKeyword();
+		
+		return parameters;
+		
+		
+	}
+	
+	
+	
 
 }

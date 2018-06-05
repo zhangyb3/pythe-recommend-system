@@ -6,6 +6,8 @@ public interface TestService {
 
 	void executeInstantRecommendOnce() throws Exception;
 
+	void generateMaterialKeyword() throws Exception;
+
 	
 	
 }
