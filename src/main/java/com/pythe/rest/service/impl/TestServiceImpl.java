@@ -22,10 +22,12 @@ import com.pythe.common.utils.DateUtils;
 import com.pythe.common.utils.ExceptionUtil;
 import com.pythe.common.utils.FactoryUtils;
 import com.pythe.common.utils.HttpClientUtil;
+import com.pythe.common.utils.JsonUtils;
 import com.pythe.contentbasedrecommend.ContentBasedRecommender;
 import com.pythe.mapper.NewsLogsMapper;
 import com.pythe.mapper.NewsMapper;
 import com.pythe.mapper.RecommendationsMapper;
+import com.pythe.mapper.TblEssayRecommendationMapper;
 import com.pythe.mapper.UsersMapper;
 //import com.pythe.mapper.VNewsVisitStatisticsMapper;
 import com.pythe.pojo.News;
@@ -33,6 +35,8 @@ import com.pythe.pojo.NewsExample;
 import com.pythe.pojo.NewsLogs;
 import com.pythe.pojo.NewsLogsExample;
 import com.pythe.pojo.NewsWithBLOBs;
+import com.pythe.pojo.TblEssayRecommendation;
+import com.pythe.pojo.TblEssayRecommendationExample;
 import com.pythe.pojo.VNewsVisitStatistics;
 import com.pythe.rest.service.TestService;
 
@@ -55,6 +59,9 @@ public class TestServiceImpl implements TestService{
 	
 	@Autowired
 	private RecommendationsMapper recommendationsMapper;
+	
+	@Autowired
+	private TblEssayRecommendationMapper essayRecommendationMapper;
 	
 //	@Autowired
 //	private VNewsVisitStatisticsMapper vNewsVisitStatisticsMapper;
@@ -129,6 +136,27 @@ public class TestServiceImpl implements TestService{
 		ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender();
 		contentBasedRecommender.genrateMaterialKeyword();
 		
+	}
+
+	@Override
+	public void generateMaterialKeywordFix() {
+		
+		TblEssayRecommendationExample essayRecommendationExample = new TblEssayRecommendationExample();
+		essayRecommendationExample.createCriteria().andEssayidIsNotNull();
+		List<TblEssayRecommendation> essayRecommendations = essayRecommendationMapper.selectByExampleWithBLOBs(essayRecommendationExample);
+		for (TblEssayRecommendation essayRecommendation : essayRecommendations) {
+			List<Long> essayIds = JsonUtils.jsonToList(essayRecommendation.getRecommendation(), Long.class);
+			if(essayIds.contains(essayRecommendation.getEssayid()))
+			{
+				System.out.println(essayIds.size());
+				essayIds.remove(essayRecommendation.getEssayid());
+				System.out.println("!!! essay " + essayRecommendation.getEssayid());
+				System.out.println(essayIds.size());
+				essayRecommendation.setRecommendation(JsonUtils.objectToJson(essayIds));
+				essayRecommendationMapper.updateByPrimaryKeySelective(essayRecommendation);
+			}
+		}
+		System.out.println(" fix finish !!!!!!!!!!!!!!!!!");
 	}
 
 

@@ -8,6 +8,8 @@ public interface TestService {
 
 	void generateMaterialKeyword() throws Exception;
 
+	void generateMaterialKeywordFix();
+
 	
 	
 }

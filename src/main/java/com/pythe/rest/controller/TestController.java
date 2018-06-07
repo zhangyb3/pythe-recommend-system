@@ -99,6 +99,21 @@ public class TestController {
 		
 	}
 	
+	@RequestMapping(value = "/material/keyword/fix", method = RequestMethod.POST)
+	@ResponseBody
+	public String generateMaterialKeywordFix(
+//			@RequestHeader(value="test") String test,
+			@RequestBody String parameters) throws Exception {
+		
+//		JSONObject params = JSONObject.parseObject(parameters);
+		
+		testService.generateMaterialKeywordFix();
+		
+		return parameters;
+		
+		
+	}
+	
 	
 	
 
