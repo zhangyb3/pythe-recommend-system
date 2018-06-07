@@ -78,6 +78,20 @@ public class RecommendController {
 		
 	}
 	
+	@RequestMapping(value = "/recommend/essay/each", method = RequestMethod.POST)
+	@ResponseBody
+	public PytheResult recommendByEssay(
+//			@RequestHeader(value="test") String test,
+			@RequestBody String parameters
+			) throws Exception {
+		
+		
+		return recommendService.recommendByEssay(parameters);
+
+		
+		
+	}
+	
 	
 
 }

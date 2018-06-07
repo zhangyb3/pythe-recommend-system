@@ -7,13 +7,13 @@ public class TblStudentEssayRecommendation {
 
     private Long studentId;
 
-    private Long essayId;
-
     private Date deriveTime;
 
     private Boolean feedback;
 
     private Integer deriveAlgorithm;
+
+    private String essays;
 
     public Long getId() {
         return id;
@@ -29,14 +29,6 @@ public class TblStudentEssayRecommendation {
 
     public void setStudentId(Long studentId) {
         this.studentId = studentId;
-    }
-
-    public Long getEssayId() {
-        return essayId;
-    }
-
-    public void setEssayId(Long essayId) {
-        this.essayId = essayId;
     }
 
     public Date getDeriveTime() {
@@ -61,5 +53,13 @@ public class TblStudentEssayRecommendation {
 
     public void setDeriveAlgorithm(Integer deriveAlgorithm) {
         this.deriveAlgorithm = deriveAlgorithm;
+    }
+
+    public String getEssays() {
+        return essays;
+    }
+
+    public void setEssays(String essays) {
+        this.essays = essays == null ? null : essays.trim();
     }
 }

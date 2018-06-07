@@ -37,6 +37,8 @@
 		<mapper resource="mybatis/mapper/TblStudentEssayRecommendationMapper.xml"/>
 		<mapper resource="mybatis/mapper/TblStudentMapper.xml"/>
 		<mapper resource="mybatis/mapper/TblEssayKeywordMapper.xml"/>
+		<mapper resource="mybatis/mapper/TblEssayRecommendationMapper.xml"/>
+		
 	</mappers>
 	
 	<!--以上加载有严格先后顺序 -->

@@ -225,66 +225,6 @@ public class TblStudentEssayRecommendationExample {
             return (Criteria) this;
         }
 
-        public Criteria andEssayIdIsNull() {
-            addCriterion("essay_id is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdIsNotNull() {
-            addCriterion("essay_id is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdEqualTo(Long value) {
-            addCriterion("essay_id =", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdNotEqualTo(Long value) {
-            addCriterion("essay_id <>", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdGreaterThan(Long value) {
-            addCriterion("essay_id >", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdGreaterThanOrEqualTo(Long value) {
-            addCriterion("essay_id >=", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdLessThan(Long value) {
-            addCriterion("essay_id <", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdLessThanOrEqualTo(Long value) {
-            addCriterion("essay_id <=", value, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdIn(List<Long> values) {
-            addCriterion("essay_id in", values, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdNotIn(List<Long> values) {
-            addCriterion("essay_id not in", values, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdBetween(Long value1, Long value2) {
-            addCriterion("essay_id between", value1, value2, "essayId");
-            return (Criteria) this;
-        }
-
-        public Criteria andEssayIdNotBetween(Long value1, Long value2) {
-            addCriterion("essay_id not between", value1, value2, "essayId");
-            return (Criteria) this;
-        }
-
         public Criteria andDeriveTimeIsNull() {
             addCriterion("derive_time is null");
             return (Criteria) this;

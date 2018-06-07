@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.Session;
+import com.pythe.common.utils.JsonUtils;
 import com.pythe.contentbasedrecommend.CustomizedHashMap;
 import com.pythe.mapper.NewsLogsMapper;
 import com.pythe.mapper.NewsMapper;
@@ -549,13 +550,21 @@ public class RecommendKit
 			//但凡近期已经给用户推荐过的文章，都过滤掉
 
 			List<TblStudentEssayRecommendation> recommendationList = studentEssayRecommendationMapper.queryCertainUserRecentlyRecommendations(userId,getInRecDate());
-			System.out.println("reced : " + recommendationList.size());
-			for (TblStudentEssayRecommendation recommendation:recommendationList)
+			if(!recommendationList.isEmpty())
 			{
-				if (toBeRecommended.contains(recommendation.getEssayId()))
+				TblStudentEssayRecommendation studentRecommendation = recommendationList.get(0);
+				List<Long> recommendations = JsonUtils.jsonToList(studentRecommendation.getEssays(), Long.class);
+				System.out.println("reced : " + recommendations.size());
+				for (Long recommendation:recommendations)
 				{
-					toBeRecommended.remove(recommendation.getEssayId());
+					if (toBeRecommended.contains(recommendation))
+					{
+						toBeRecommended.remove(recommendation);
+					}
 				}
+			}
+			else{
+				System.out.println("reced : " + 0);
 			}
 		}
 		catch (Exception e)
@@ -593,11 +602,11 @@ public class RecommendKit
 		try
 		{
 			Date now = new Date();
-			for (Long recommendationEssayId : toBeRecommended)
+//			for (Long recommendationEssayId : toBeRecommended)
 			{
 				TblStudentEssayRecommendation rec = new TblStudentEssayRecommendation();
 				rec.setStudentId(userId);
-				rec.setEssayId(recommendationEssayId);
+				rec.setEssays(JsonUtils.objectToJson(toBeRecommended));
 				rec.setDeriveTime(now);
 				rec.setDeriveAlgorithm(cb);
 				studentEssayRecommendationMapper.insert(rec);

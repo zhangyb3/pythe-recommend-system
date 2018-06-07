@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pythe.mapper.TblEssayRecommendationMapper" >
+  <resultMap id="BaseResultMap" type="com.pythe.pojo.TblEssayRecommendation" >
+    <id column="essayId" property="essayid" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.pythe.pojo.TblEssayRecommendation" extends="BaseResultMap" >
+    <result column="recommendation" property="recommendation" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    essayId, type
+  </sql>
+  <sql id="Blob_Column_List" >
+    recommendation
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.pythe.pojo.TblEssayRecommendationExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_essay_recommendation
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pythe.pojo.TblEssayRecommendationExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_essay_recommendation
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_essay_recommendation
+    where essayId = #{essayid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_essay_recommendation
+    where essayId = #{essayid,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.pythe.pojo.TblEssayRecommendationExample" >
+    delete from tbl_essay_recommendation
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.pythe.pojo.TblEssayRecommendation" >
+    insert into tbl_essay_recommendation (essayId, type, recommendation
+      )
+    values (#{essayid,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{recommendation,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pythe.pojo.TblEssayRecommendation" >
+    insert into tbl_essay_recommendation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="essayid != null" >
+        essayId,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="recommendation != null" >
+        recommendation,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="essayid != null" >
+        #{essayid,jdbcType=BIGINT},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="recommendation != null" >
+        #{recommendation,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.pythe.pojo.TblEssayRecommendationExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_essay_recommendation
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tbl_essay_recommendation
+    <set >
+      <if test="record.essayid != null" >
+        essayId = #{record.essayid,jdbcType=BIGINT},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.recommendation != null" >
+        recommendation = #{record.recommendation,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tbl_essay_recommendation
+    set essayId = #{record.essayid,jdbcType=BIGINT},
+      type = #{record.type,jdbcType=INTEGER},
+      recommendation = #{record.recommendation,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tbl_essay_recommendation
+    set essayId = #{record.essayid,jdbcType=BIGINT},
+      type = #{record.type,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pythe.pojo.TblEssayRecommendation" >
+    update tbl_essay_recommendation
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="recommendation != null" >
+        recommendation = #{recommendation,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where essayId = #{essayid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pythe.pojo.TblEssayRecommendation" >
+    update tbl_essay_recommendation
+    set type = #{type,jdbcType=INTEGER},
+      recommendation = #{recommendation,jdbcType=LONGVARCHAR}
+    where essayId = #{essayid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.TblEssayRecommendation" >
+    update tbl_essay_recommendation
+    set type = #{type,jdbcType=INTEGER}
+    where essayId = #{essayid,jdbcType=BIGINT}
+  </update>
+</mapper>

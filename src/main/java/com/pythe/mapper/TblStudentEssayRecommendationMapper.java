@@ -1,6 +1,5 @@
 package com.pythe.mapper;
 
-import com.pythe.pojo.Recommendations;
 import com.pythe.pojo.TblStudentEssayRecommendation;
 import com.pythe.pojo.TblStudentEssayRecommendationExample;
 import java.util.List;
@@ -17,19 +16,25 @@ public interface TblStudentEssayRecommendationMapper {
 
     int insertSelective(TblStudentEssayRecommendation record);
 
+    List<TblStudentEssayRecommendation> selectByExampleWithBLOBs(TblStudentEssayRecommendationExample example);
+
     List<TblStudentEssayRecommendation> selectByExample(TblStudentEssayRecommendationExample example);
 
     TblStudentEssayRecommendation selectByPrimaryKey(Long id);
 
     int updateByExampleSelective(@Param("record") TblStudentEssayRecommendation record, @Param("example") TblStudentEssayRecommendationExample example);
 
+    int updateByExampleWithBLOBs(@Param("record") TblStudentEssayRecommendation record, @Param("example") TblStudentEssayRecommendationExample example);
+
     int updateByExample(@Param("record") TblStudentEssayRecommendation record, @Param("example") TblStudentEssayRecommendationExample example);
 
     int updateByPrimaryKeySelective(TblStudentEssayRecommendation record);
 
-    int updateByPrimaryKey(TblStudentEssayRecommendation record);
+    int updateByPrimaryKeyWithBLOBs(TblStudentEssayRecommendation record);
 
+    int updateByPrimaryKey(TblStudentEssayRecommendation record);
     
+  
     //查询指定日期后的指定用户推荐数据
     List<TblStudentEssayRecommendation> queryCertainUserRecentlyRecommendations(@Param("userId") Long userId, @Param("date") String date);
 

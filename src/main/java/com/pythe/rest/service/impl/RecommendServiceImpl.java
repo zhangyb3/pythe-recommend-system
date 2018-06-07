@@ -176,6 +176,28 @@ public class RecommendServiceImpl implements RecommendService{
 		return null;
 	}
 
+	@Override
+	public PytheResult recommendByEssay(String parameters) throws Exception {
+		
+		PropGetKit.loadProperties("paraConfig");
+		
+		JSONObject p = JSONObject.parseObject(parameters);
+		String recommendMode = p.getString("mode");
+		Long studentId = p.getLong("studentId");
+		Long readingId = p.getLong("essayId");
+		
+		if(recommendMode.equals("CB") && readingId > 0L)
+		{
+			ContentBasedRecommender contentBasedRecommender = new ContentBasedRecommender();
+			return contentBasedRecommender.recommendByEssay(readingId,studentId);			
+						
+		}
+		
+		
+		
+		return null;
+	}
+
 
 
 }

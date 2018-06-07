@@ -4,10 +4,12 @@
   <resultMap id="BaseResultMap" type="com.pythe.pojo.TblStudentEssayRecommendation" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="student_id" property="studentId" jdbcType="BIGINT" />
-    <result column="essay_id" property="essayId" jdbcType="BIGINT" />
     <result column="derive_time" property="deriveTime" jdbcType="TIMESTAMP" />
     <result column="feedback" property="feedback" jdbcType="BIT" />
     <result column="derive_algorithm" property="deriveAlgorithm" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.pythe.pojo.TblStudentEssayRecommendation" extends="BaseResultMap" >
+    <result column="essays" property="essays" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -68,8 +70,27 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, student_id, essay_id, derive_time, feedback, derive_algorithm
+    id, student_id, derive_time, feedback, derive_algorithm
   </sql>
+  <sql id="Blob_Column_List" >
+    essays
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.pythe.pojo.TblStudentEssayRecommendationExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_student_essay_recommendation
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pythe.pojo.TblStudentEssayRecommendationExample" >
     select
     <if test="distinct" >
@@ -84,9 +105,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from tbl_student_essay_recommendation
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -104,11 +127,11 @@
   	<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">  
         SELECT LAST_INSERT_ID()  
     </selectKey>
-    insert into tbl_student_essay_recommendation (id, student_id, essay_id, 
-      derive_time, feedback, derive_algorithm
+    insert into tbl_student_essay_recommendation (id, student_id, derive_time, 
+      feedback, derive_algorithm, essays
       )
-    values (#{id,jdbcType=BIGINT}, #{studentId,jdbcType=BIGINT}, #{essayId,jdbcType=BIGINT}, 
-      #{deriveTime,jdbcType=TIMESTAMP}, #{feedback,jdbcType=BIT}, #{deriveAlgorithm,jdbcType=INTEGER}
+    values (#{id,jdbcType=BIGINT}, #{studentId,jdbcType=BIGINT}, #{deriveTime,jdbcType=TIMESTAMP}, 
+      #{feedback,jdbcType=BIT}, #{deriveAlgorithm,jdbcType=INTEGER}, #{essays,jdbcType=LONGVARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.pythe.pojo.TblStudentEssayRecommendation" >
@@ -120,9 +143,6 @@
       <if test="studentId != null" >
         student_id,
       </if>
-      <if test="essayId != null" >
-        essay_id,
-      </if>
       <if test="deriveTime != null" >
         derive_time,
       </if>
@@ -132,6 +152,9 @@
       <if test="deriveAlgorithm != null" >
         derive_algorithm,
       </if>
+      <if test="essays != null" >
+        essays,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -139,9 +162,6 @@
       </if>
       <if test="studentId != null" >
         #{studentId,jdbcType=BIGINT},
-      </if>
-      <if test="essayId != null" >
-        #{essayId,jdbcType=BIGINT},
       </if>
       <if test="deriveTime != null" >
         #{deriveTime,jdbcType=TIMESTAMP},
@@ -151,6 +171,9 @@
       </if>
       <if test="deriveAlgorithm != null" >
         #{deriveAlgorithm,jdbcType=INTEGER},
+      </if>
+      <if test="essays != null" >
+        #{essays,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -169,9 +192,6 @@
       <if test="record.studentId != null" >
         student_id = #{record.studentId,jdbcType=BIGINT},
       </if>
-      <if test="record.essayId != null" >
-        essay_id = #{record.essayId,jdbcType=BIGINT},
-      </if>
       <if test="record.deriveTime != null" >
         derive_time = #{record.deriveTime,jdbcType=TIMESTAMP},
       </if>
@@ -181,7 +201,22 @@
       <if test="record.deriveAlgorithm != null" >
         derive_algorithm = #{record.deriveAlgorithm,jdbcType=INTEGER},
       </if>
+      <if test="record.essays != null" >
+        essays = #{record.essays,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tbl_student_essay_recommendation
+    set id = #{record.id,jdbcType=BIGINT},
+      student_id = #{record.studentId,jdbcType=BIGINT},
+      derive_time = #{record.deriveTime,jdbcType=TIMESTAMP},
+      feedback = #{record.feedback,jdbcType=BIT},
+      derive_algorithm = #{record.deriveAlgorithm,jdbcType=INTEGER},
+      essays = #{record.essays,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -190,7 +225,6 @@
     update tbl_student_essay_recommendation
     set id = #{record.id,jdbcType=BIGINT},
       student_id = #{record.studentId,jdbcType=BIGINT},
-      essay_id = #{record.essayId,jdbcType=BIGINT},
       derive_time = #{record.deriveTime,jdbcType=TIMESTAMP},
       feedback = #{record.feedback,jdbcType=BIT},
       derive_algorithm = #{record.deriveAlgorithm,jdbcType=INTEGER}
@@ -204,9 +238,6 @@
       <if test="studentId != null" >
         student_id = #{studentId,jdbcType=BIGINT},
       </if>
-      <if test="essayId != null" >
-        essay_id = #{essayId,jdbcType=BIGINT},
-      </if>
       <if test="deriveTime != null" >
         derive_time = #{deriveTime,jdbcType=TIMESTAMP},
       </if>
@@ -216,20 +247,30 @@
       <if test="deriveAlgorithm != null" >
         derive_algorithm = #{deriveAlgorithm,jdbcType=INTEGER},
       </if>
+      <if test="essays != null" >
+        essays = #{essays,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pythe.pojo.TblStudentEssayRecommendation" >
+    update tbl_student_essay_recommendation
+    set student_id = #{studentId,jdbcType=BIGINT},
+      derive_time = #{deriveTime,jdbcType=TIMESTAMP},
+      feedback = #{feedback,jdbcType=BIT},
+      derive_algorithm = #{deriveAlgorithm,jdbcType=INTEGER},
+      essays = #{essays,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.TblStudentEssayRecommendation" >
     update tbl_student_essay_recommendation
     set student_id = #{studentId,jdbcType=BIGINT},
-      essay_id = #{essayId,jdbcType=BIGINT},
       derive_time = #{deriveTime,jdbcType=TIMESTAMP},
       feedback = #{feedback,jdbcType=BIT},
       derive_algorithm = #{deriveAlgorithm,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
   
-   
   <select id="queryCertainUserRecentlyRecommendations" resultMap="BaseResultMap"  >
     select 
     
@@ -237,6 +278,5 @@
     from tbl_student_essay_recommendation 
     where derive_time &gt; #{date} and student_id = #{userId}
   </select>
-  
   
 </mapper>

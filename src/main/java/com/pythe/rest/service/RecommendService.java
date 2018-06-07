@@ -10,6 +10,8 @@ public interface RecommendService {
 
 	PytheResult recommendEssayEverytime(String parameters) throws Exception;
 
+	PytheResult recommendByEssay(String parameters) throws Exception;
+
 	
 	
 }
