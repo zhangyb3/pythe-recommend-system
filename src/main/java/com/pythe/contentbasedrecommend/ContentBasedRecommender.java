@@ -3,6 +3,7 @@
  */
 package com.pythe.contentbasedrecommend;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -418,6 +419,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 				essayKeyword.setEssayId(essay.getId());
 				essayKeyword.setEssayType(essay.getType());
 				essayKeyword.setKeyword(JSONArray.toJSONString(kws));
+				essayKeyword.setGrade(essay.getGrade());
 				System.out.println("essay " + essay.getId() + " , " + JSONArray.toJSONString(kws));
 				essayKeywordMapper.insert(essayKeyword);
 				
@@ -656,7 +658,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 			System.out.println("CB recommend start at "+ new Date());
 			
 			//计算每篇文章关键词
-//			TblEssayWithBLOBs essayWithBLOBs = essayMapper.selectByPrimaryKey(readingId);
+//			TblEssayWithBLOBs reading = essayMapper.selectByPrimaryKey(readingId);
 //			List<Keyword> kws = TFIDF.getTFIDF(essayWithBLOBs.getTitle(), essayWithBLOBs.getContentText(), KEY_WORDS_NUM);
 //			CustomizedHashMap<String, Double> essayPreListMap = new CustomizedHashMap<String, Double>();
 //			for (Keyword keyword : kws) {
@@ -665,6 +667,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 			
 			// 文章及对应关键词列表的Map
 			HashMap<Long, List<Keyword>> essayKeyWordsMap = new HashMap<Long, List<Keyword>>();
+			HashMap<Long, Integer> essayGradeMap = new HashMap<Long, Integer>();
 			HashMap<Long, Integer> essayTypeMap = new HashMap<Long, Integer>();
 //			// 指定文章的关键词列表
 //			HashMap<Long, CustomizedHashMap<Integer, CustomizedHashMap<String, Double>>> userPrefListMap = recommendKit
@@ -674,24 +677,17 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 			
 			TblEssayExample essayExample = new TblEssayExample();
 			essayExample.createCriteria();
-			List<TblEssayWithBLOBs> essays = essayMapper.selectByExampleWithBLOBs(essayExample);
+			List<TblEssay> essays = essayMapper.selectByExample(essayExample);
 			System.out.println("run to this line !");
 			
 			HashMap<Long, CustomizedHashMap<String, Double>> essayPreListMap = new HashMap<Long, CustomizedHashMap<String, Double>>();
 			
-			for (TblEssayWithBLOBs essay:essays)
+			for (TblEssay e:essays)
 			{
 				
-				//计算每篇文章关键词
-				List<Keyword> kws = TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
-				CustomizedHashMap<String, Double> preListMap = new CustomizedHashMap<String, Double>();
-				for (Keyword keyword : kws) {
-					preListMap.put(keyword.getName(), keyword.getScore());
-				}
-				essayPreListMap.put(essay.getId(), preListMap);
 				
 				//从预计算结果中读取keywords
-				TblEssayKeyword essayKeywordRecord = essayKeywordMapper.selectByPrimaryKey(essay.getId());
+				TblEssayKeyword essayKeywordRecord = essayKeywordMapper.selectByPrimaryKey(e.getId());
 				System.out.println(essayKeywordRecord.getKeyword());
 				JSONArray keywordArray = JSONArray.parseArray(essayKeywordRecord.getKeyword());
 				List<Keyword> keywords = new ArrayList<Keyword>();
@@ -703,31 +699,72 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 					System.out.println(k + " finish !");
 				}
 				
-				
-						
-				essayKeyWordsMap.put(essay.getId(), keywords);
-				System.out.println("essay " + essay.getId() + " , "  );
+				essayKeyWordsMap.put(e.getId(), keywords);
+				essayGradeMap.put(e.getId(), e.getGrade());
+				System.out.println("essay " + e.getId() + " , "  );
 				for (Keyword keyword : keywords) {
 					System.out.println("      " + keyword  );
 				}
-				essayTypeMap.put(essay.getId(), essay.getType());
+			}	
+			System.out.println("essay keyword set size : " + essayKeyWordsMap.size());
+			
+			CustomizedHashMap<String, Double> preListMap = new CustomizedHashMap<String, Double>();
+			for (TblEssay e:essays)
+			{	
+				System.out.println("compute essay : " + e.getId());
+				TblEssayWithBLOBs essay = essayMapper.selectByPrimaryKey(e.getId());
 				
+				//计算每篇文章关键词
+//				List<Keyword> kws = TFIDF.getTFIDF(essay.getTitle(), essay.getContentText(), KEY_WORDS_NUM);
+//				CustomizedHashMap<String, Double> preListMap = new CustomizedHashMap<String, Double>();
+//				for (Keyword keyword : kws) {
+//					preListMap.put(keyword.getName(), keyword.getScore());
+//				}
+				
+				TblEssayKeyword essayKeywordRecord = essayKeywordMapper.selectByPrimaryKey(e.getId());
+				System.out.println(essayKeywordRecord.getKeyword());
+				JSONArray keywordArray = JSONArray.parseArray(essayKeywordRecord.getKeyword());
+				List<Keyword> keywords = new ArrayList<Keyword>();
+				
+				for (Iterator iterator = keywordArray.iterator(); iterator.hasNext();) {
+					JSONObject kw = (JSONObject) iterator.next();
+					Keyword k = new Keyword(kw.getString("name"), kw.getDouble("score"));
+					keywords.add(k);
+					
+					preListMap.put(kw.getString("name"), kw.getDouble("score"));
+					
+				}
+				System.out.println("preListMap size : " + preListMap.size());
+				System.out.println("essay keyword set size : " + essayKeyWordsMap.size());
 				
 				Map<Long, Double> tempMatchMap = new HashMap<Long, Double>();
 				Iterator<Long> ite = essayKeyWordsMap.keySet().iterator();
+				
+				
 				while (ite.hasNext())
 				{
 					Long eId = ite.next();
-					int tId = essayTypeMap.get(eId);
-					if (null != essayPreListMap)
+					//去除级别相差超过2的项
+					Integer toBeComparedGrade = essayGradeMap.get(eId);
+					System.out.println("!!!!!! compared essay : " + eId  + "," + toBeComparedGrade.intValue());
+					if(toBeComparedGrade.intValue() >= e.getGrade().intValue()
+						&& toBeComparedGrade.intValue() <= (e.getGrade().intValue()+2) 
+					    && null != essayPreListMap
+					    && !eId.equals(e.getId()))
+					{
 						tempMatchMap.put(eId,
 								getMatchValue(preListMap, essayKeyWordsMap.get(eId)));
+					}	
 					else
-						continue;
+					{
+//						System.out.println("!!!!!!!!!!!!!!! level gap");
+					}
+					
 				}
 				System.err.println("============================> temp match : " + JSONObject.toJSONString(tempMatchMap));
 				// 去除匹配值为0的项目
 				removeZeroItem(tempMatchMap);
+				
 				if (!(tempMatchMap.toString().equals("{}")))
 				{
 					tempMatchMap = sortMapByValue(tempMatchMap);
@@ -757,13 +794,14 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 					
 					System.out.println("essay " + essay.getId() + " , " + JsonUtils.objectToJson(toBeRecommended));
 					
+					preListMap.clear();
 				}
 				session.commit();
 				
 			}
 
 			
-			System.out.println("CB recommend has contributed " + (count/students.size()) + " recommending news on average");
+			System.out.println("CB recommend has contributed " + (count/students.size()) + " recommendings on average");
 			System.out.println("CB recommend finished at "+new Date());
 		}
 		catch (Exception e)
@@ -774,6 +812,25 @@ public class ContentBasedRecommender implements RecommendAlgorithm
 		//过滤掉用户已经看过的文章
 		recommendKit.filterViewedEssay(toBeRecommended, recommendStudentId);
 		return PytheResult.ok(toBeRecommended);
+	}
+
+	private void removeLevelGapItem(TblEssayWithBLOBs essay, Map<Long, Double> map) {
+		
+		HashSet<Long> toBeDeleteItemSet = new HashSet<Long>();
+		Iterator<Long> ite = map.keySet().iterator();
+		while (ite.hasNext())
+		{
+			Long newsId = ite.next();
+			if (map.get(newsId) <= 0)
+			{
+				toBeDeleteItemSet.add(newsId);
+			}
+		}
+		for (Long item : toBeDeleteItemSet)
+		{
+			map.remove(item);
+		}
+		
 	}
 	
 	

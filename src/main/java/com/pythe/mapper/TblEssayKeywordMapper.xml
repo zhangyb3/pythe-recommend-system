@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.pythe.pojo.TblEssayKeyword" >
     <id column="essay_id" property="essayId" jdbcType="BIGINT" />
     <result column="essay_type" property="essayType" jdbcType="INTEGER" />
+    <result column="grade" property="grade" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.pythe.pojo.TblEssayKeyword" extends="BaseResultMap" >
     <result column="keyword" property="keyword" jdbcType="LONGVARCHAR" />
@@ -67,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    essay_id, essay_type
+    essay_id, essay_type, grade
   </sql>
   <sql id="Blob_Column_List" >
     keyword
@@ -121,10 +122,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.pythe.pojo.TblEssayKeyword" >
-    insert into tbl_essay_keyword (essay_id, essay_type, keyword
-      )
-    values (#{essayId,jdbcType=BIGINT}, #{essayType,jdbcType=INTEGER}, #{keyword,jdbcType=LONGVARCHAR}
-      )
+    insert into tbl_essay_keyword (essay_id, essay_type, grade, 
+      keyword)
+    values (#{essayId,jdbcType=BIGINT}, #{essayType,jdbcType=INTEGER}, #{grade,jdbcType=INTEGER}, 
+      #{keyword,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.pythe.pojo.TblEssayKeyword" >
     insert into tbl_essay_keyword
@@ -134,6 +135,9 @@
       </if>
       <if test="essayType != null" >
         essay_type,
+      </if>
+      <if test="grade != null" >
+        grade,
       </if>
       <if test="keyword != null" >
         keyword,
@@ -145,6 +149,9 @@
       </if>
       <if test="essayType != null" >
         #{essayType,jdbcType=INTEGER},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=INTEGER},
       </if>
       <if test="keyword != null" >
         #{keyword,jdbcType=LONGVARCHAR},
@@ -166,6 +173,9 @@
       <if test="record.essayType != null" >
         essay_type = #{record.essayType,jdbcType=INTEGER},
       </if>
+      <if test="record.grade != null" >
+        grade = #{record.grade,jdbcType=INTEGER},
+      </if>
       <if test="record.keyword != null" >
         keyword = #{record.keyword,jdbcType=LONGVARCHAR},
       </if>
@@ -178,6 +188,7 @@
     update tbl_essay_keyword
     set essay_id = #{record.essayId,jdbcType=BIGINT},
       essay_type = #{record.essayType,jdbcType=INTEGER},
+      grade = #{record.grade,jdbcType=INTEGER},
       keyword = #{record.keyword,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -186,7 +197,8 @@
   <update id="updateByExample" parameterType="map" >
     update tbl_essay_keyword
     set essay_id = #{record.essayId,jdbcType=BIGINT},
-      essay_type = #{record.essayType,jdbcType=INTEGER}
+      essay_type = #{record.essayType,jdbcType=INTEGER},
+      grade = #{record.grade,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -197,6 +209,9 @@
       <if test="essayType != null" >
         essay_type = #{essayType,jdbcType=INTEGER},
       </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=INTEGER},
+      </if>
       <if test="keyword != null" >
         keyword = #{keyword,jdbcType=LONGVARCHAR},
       </if>
@@ -206,12 +221,14 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pythe.pojo.TblEssayKeyword" >
     update tbl_essay_keyword
     set essay_type = #{essayType,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER},
       keyword = #{keyword,jdbcType=LONGVARCHAR}
     where essay_id = #{essayId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.pythe.pojo.TblEssayKeyword" >
     update tbl_essay_keyword
-    set essay_type = #{essayType,jdbcType=INTEGER}
+    set essay_type = #{essayType,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER}
     where essay_id = #{essayId,jdbcType=BIGINT}
   </update>
 </mapper>

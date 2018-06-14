@@ -581,13 +581,17 @@ public class RecommendKit
 			vEssayViewLogExample.createCriteria().andStudentIdEqualTo(userId);
 			List<VEssayViewLog> essayViewLogs = essayViewLogMapper.selectByExample(vEssayViewLogExample);
 			System.out.println("viewed : " + essayViewLogs.size());
-			for (VEssayViewLog essayViewLog:essayViewLogs)
+			if(!toBeRecommended.isEmpty() && !essayViewLogs.isEmpty())
 			{
-				if (toBeRecommended.contains(essayViewLog.getEssayId()))
+				for (VEssayViewLog essayViewLog:essayViewLogs)
 				{
-					toBeRecommended.remove(essayViewLog.getEssayId());
+					if (toBeRecommended.contains(essayViewLog.getEssayId()))
+					{
+						toBeRecommended.remove(essayViewLog.getEssayId());
+					}
 				}
 			}
+			
 		}
 		catch (Exception e)
 		{

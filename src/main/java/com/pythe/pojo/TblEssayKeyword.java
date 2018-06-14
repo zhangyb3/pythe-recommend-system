@@ -5,6 +5,8 @@ public class TblEssayKeyword {
 
     private Integer essayType;
 
+    private Integer grade;
+
     private String keyword;
 
     public Long getEssayId() {
@@ -21,6 +23,14 @@ public class TblEssayKeyword {
 
     public void setEssayType(Integer essayType) {
         this.essayType = essayType;
+    }
+
+    public Integer getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Integer grade) {
+        this.grade = grade;
     }
 
     public String getKeyword() {
